@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>To-Do-List Application</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="main">
+
+        <h1>Things<i>To Do</i></h1>
+
+        <p class="sub" id="sub">
+            Start adding your task below.
+        </p>
+
+        <div class="input-row">
+
+            <input 
+                type="text"  id="inp" placeholder="Add your Task..." maxlength="100">
+
+            <button class="add" onclick="add()">Add</button>
+
+        </div>
+
+        <ul id="list"></ul>
+
+        <p class="empty" id="empty">
+            Nothing here - enjoy the quiet..
+        </p>
+
+    </div>
+
+
+    <script>
+
+        let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+
+
+        const list = document.getElementById('list');
+        const sub = document.getElementById('sub');
+        const empty = document.getElementById('empty');
+
+        function save() {
+
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+
+        }
+        function render() {
+
+            list.innerHTML = '';
+
+
+            tasks.forEach((t, i) => {
+
+                const li = document.createElement('li');
+
+
+                if (t.done) {
+                    li.className = 'done';
+                }
+
+
+                li.innerHTML = `
+                    <div class="box" onclick="toggle(${i})"></div>
+
+                    <span class="txt">${t.text}</span>
+
+                    <button class="del" onclick="remove(${i})">
+                        🗑
+                    </button>
+                `;
+
+
+                list.appendChild(li);
+
+            });
+
+
+            const done = tasks.filter(t => t.done).length;
+
+
+            sub.textContent = tasks.length
+                ? `${done} of ${tasks.length} done`
+                : `Start adding your task below.`;
+
+
+            empty.style.display = tasks.length
+                ? 'none'
+                : 'block';
+
+
+            save();
+
+        }
+
+        function add() {
+
+            const v = document.getElementById('inp').value.trim();
+
+
+            if (!v) {
+                return;
+            }
+
+
+            tasks.unshift({
+                text: v,
+                done: false
+            });
+
+
+            document.getElementById('inp').value = "";
+
+
+            render();
+
+        }
+
+
+    
+        function toggle(i) {
+
+            tasks[i].done = !tasks[i].done;
+
+            render();
+
+        }
+
+        function remove(i) {
+
+            tasks.splice(i, 1);
+
+            render();
+
+        }
+        document.getElementById('inp').addEventListener('keydown', function(e) {
+
+            if (e.key === 'Enter') {
+                add();
+            }
+
+        });
+   render();
+
+    </script>
+
+</body>
+
+</html>
